@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BARKINIELA 26-27</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  iframe { position: fixed; left: 0; top: 0; border: 0; background: #000; transform-origin: 0 0; }
+</style>
+</head>
+<body>
+<iframe id="f" allow="clipboard-write"></iframe>
+<script>
+  // 1) PEGA AQUI la direccion de tu web de Apps Script (la que acaba en /exec, tal cual la abres en el navegador)
+  var BASE = "https://script.google.com/macros/s/AKfycbxCI6odh8LvQgJRUC7D172DEzcvVydZksn-ia9R61rD37MkHKngCWjvbymc8b9dJkMR2A/exec";
+
+  // 2) lo demas no hay que tocarlo
+  var f = document.getElementById('f'), u;
+  try {
+    u = new URL(BASE);
+    new URLSearchParams(location.search).forEach(function(v, k) { u.searchParams.set(k, v); });   // pasa tambien &yo=NOMBRE (enlace personal) y lo demas
+    f.src = u.toString();
+  } catch (e) { document.body.innerHTML = '<p style="color:#fff;font:16px sans-serif;padding:20px">Falta pegar la direccion de la web en este archivo.</p>'; }
+
+  // en el movil la web se disenia para 542 px de ancho: se muestra a ese ancho y se escala para llenar la pantalla (igual que al abrirla directamente)
+  function ajusta() {
+    var w = window.innerWidth, h = window.innerHeight;
+    if (w < 700) {
+      var k = w / 542;
+      f.style.width = '542px'; f.style.height = (h / k) + 'px'; f.style.transform = 'scale(' + k + ')';
+    } else {
+      f.style.width = w + 'px'; f.style.height = h + 'px'; f.style.transform = 'none';
+    }
+  }
+  window.addEventListener('resize', ajusta); window.addEventListener('orientationchange', ajusta); ajusta();
+</script>
+</body>
+</html>

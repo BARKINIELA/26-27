@@ -30,8 +30,14 @@
   @keyframes tgcf{0%,69%{opacity:0;transform:translate(0,0) rotate(0)}71%{opacity:1}92%,100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(400deg)}}
   @keyframes tgbx{0%,36%{opacity:0;translate:-150px 0}38%{opacity:1;translate:-150px 0}70%{opacity:1;translate:4px 0}72%,100%{opacity:0;translate:4px 6px}}
   @keyframes tgby{0%,38%{transform:translateY(0)}48%{transform:translateY(-22px)}56%{transform:translateY(0)}63%{transform:translateY(-10px)}70%{transform:translateY(2px)}100%{transform:translateY(2px)}}
-  #ld { animation: ldoff .4s 14s forwards; }
+  #ld { animation: ldoff .4s 3s forwards; }
   @keyframes ldoff { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+  /* en la pantalla de carga las dos acciones empiezan casi al aparecer: palanca y giro de rodillos, y golpe del golfista */
+  #ld .tit .tsm, #ld .tit .tlv { animation-delay: -1.4s; }
+  #ld .tit .trl:nth-child(1) .trs { animation-delay: -1.4s !important; }
+  #ld .tit .trl:nth-child(2) .trs { animation-delay: -1.15s !important; }
+  #ld .tit .trl:nth-child(3) .trs { animation-delay: -.9s !important; }
+  #ld .tit .tgf, #ld .tit .tar, #ld .tit .te4, #ld .tit .te4:after, #ld .tit .te4 s { animation-delay: -.45s; }
   #ld.off { opacity: 0; pointer-events: none; }
   #ld .sp { width: 34px; height: 34px; border: 4px solid #3a3a3c; border-top-color: #ffd60a; border-radius: 50%; animation: g .8s linear infinite; }
   @keyframes g { to { transform: rotate(360deg); } }
@@ -43,7 +49,7 @@
 <iframe id="f" allow="clipboard-write"></iframe>
 <script>
   // 1) PEGA AQUI tu enlace largo de la web (el que acaba en /exec?token=...&accion=tabla)
-  var BASE = "https://script.google.com/macros/s/AKfycbxCI6odh8LvQgJRUC7D172DEzcvVydZksn-ia9R61rD37MkHKngCWjvbymc8b9dJkMR2A/exec?token=barkiniela2026secreto&accion=tabla";
+  var BASE = "PEGA_AQUI_LA_URL_DE_TU_WEB";
 
   // 2) lo demas no hay que tocarlo
   var f = document.getElementById('f'), u;
@@ -55,7 +61,7 @@
 
   var ld = document.getElementById('ld');
   function quita() { ld.className = 'off'; setTimeout(function() { ld.style.display = 'none'; }, 600); }
-  f.addEventListener('load', quita); setTimeout(quita, 10000);
+  f.addEventListener('load', quita); setTimeout(quita, 3000);
   try { (function() {   // pantalla de carga: el titulo a su tamano, escalado al ancho del movil y con la tragaperras alineada con las letras
     var tl = document.getElementById('tl'), sm = tl.querySelector('.tsm'), bl = tl.querySelector('.tbl');
     function aj() {

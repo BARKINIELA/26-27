@@ -227,9 +227,14 @@
   function esIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
   function enStandalone() { return !!navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); }
   function pintaBell(on) { bell.className = on ? 'on' : ''; }
-  function toInner(m) {   // la web de Apps Script va en dos marcos anidados (el de Google y, dentro, el nuestro): el mensaje se manda al de dentro y, por si acaso, al de fuera
-    try { f.contentWindow.frames[0].postMessage(m, '*'); } catch (x) {}
-    try { f.contentWindow.postMessage(m, '*'); } catch (x) {}
+  function toInner(m) {   // la web de Apps Script va dentro de varios marcos anidados de Google: el mensaje se manda a todos los marcos de dentro (el nuestro es el mas profundo)
+    function go(w, d) {
+      try { w.postMessage(m, '*'); } catch (x) {}
+      if (d > 3) return;
+      var n = 0; try { n = w.length; } catch (x) {}
+      for (var i = 0; i < n; i++) { try { go(w[i], d + 1); } catch (x) {} }
+    }
+    try { go(f.contentWindow, 0); } catch (x) {}
   }
   function mandaSub(sub) { try { toInner({ bk: 'push', sub: sub.toJSON() }, '*'); } catch (x) {} }
   function swReg() { return navigator.serviceWorker.register('sw.js').then(function() { return navigator.serviceWorker.ready; }); }

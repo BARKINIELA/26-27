@@ -227,7 +227,11 @@
   function esIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
   function enStandalone() { return !!navigator.standalone || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); }
   function pintaBell(on) { bell.className = on ? 'on' : ''; }
-  function mandaSub(sub) { try { f.contentWindow.postMessage({ bk: 'push', sub: sub.toJSON() }, '*'); } catch (x) {} }
+  function toInner(m) {   // la web de Apps Script va en dos marcos anidados (el de Google y, dentro, el nuestro): el mensaje se manda al de dentro y, por si acaso, al de fuera
+    try { f.contentWindow.frames[0].postMessage(m, '*'); } catch (x) {}
+    try { f.contentWindow.postMessage(m, '*'); } catch (x) {}
+  }
+  function mandaSub(sub) { try { toInner({ bk: 'push', sub: sub.toJSON() }, '*'); } catch (x) {} }
   function swReg() { return navigator.serviceWorker.register('sw.js').then(function() { return navigator.serviceWorker.ready; }); }
   bell.addEventListener('click', function() {
     if (!pushOK()) { aviso(esIOS() && !enStandalone() ? 'En iPhone: pulsa Compartir y luego «Añadir a pantalla de inicio». Abre la web desde ese icono y vuelve a tocar la campana.' : 'Este navegador no permite avisos. Ábrela en Chrome.'); return; }
@@ -237,7 +241,7 @@
       if (perm !== 'granted') { aviso('Permiso denegado. Actívalo en los ajustes del navegador (avisos de esta web).'); return; }
       return swReg().then(function(reg) { return reg.pushManager.getSubscription().then(function(sub) {
         if (sub && ya) {   // ya estaba activado: la campana lo desactiva
-          return sub.unsubscribe().then(function() { try { f.contentWindow.postMessage({ bk: 'pushoff' }, '*'); localStorage.removeItem('bk_push'); } catch (x) {} pintaBell(false); aviso('Avisos desactivados'); });
+          return sub.unsubscribe().then(function() { try { toInner({ bk: 'pushoff' }, '*'); localStorage.removeItem('bk_push'); } catch (x) {} pintaBell(false); aviso('Avisos desactivados'); });
         }
         return (sub ? Promise.resolve(sub) : reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(VAPID_PUB) })).then(function(s) { try { localStorage.setItem('bk_push', '1'); } catch (x) {} pintaBell(true); mandaSub(s); });
       }); });
@@ -245,7 +249,7 @@
   });
   // al pulsar TERMINAR en la web: pide el permiso (si hace falta, con ese mismo toque) y activa los avisos de este navegador; si ya estaban activados solo renueva el enlace con el jugador
   function infoPermiso() {   // dice a la web el permiso de este navegador: granted / denied / default
-    try { if (!pushOK() || (esIOS() && !enStandalone())) return; f.contentWindow.postMessage({ bk: 'permiso', e: Notification.permission === 'denied' ? 'd' : Notification.permission === 'granted' ? 'g' : 'n' }, '*'); } catch (x) {}
+    try { if (!pushOK() || (esIOS() && !enStandalone())) return; toInner({ bk: 'permiso', e: Notification.permission === 'denied' ? 'd' : Notification.permission === 'granted' ? 'g' : 'n' }, '*'); } catch (x) {}
   }
   window.addEventListener('message', function(e) {
     var d = e.data; if (!d || d.bk !== 'activar') return;
@@ -281,7 +285,7 @@
       navigator.serviceWorker.getRegistration().then(function(reg) { return reg && reg.pushManager.getSubscription(); }).then(function(sub) { if (sub) mandaSub(sub); else pintaBell(false); });
     } catch (x) {}
   }
-  function quita() { setTimeout(refrescaSub, 1500); setTimeout(infoPermiso, 2500); ld.className = 'off'; try { f.contentWindow.postMessage({ bk: 'giro' }, '*'); } catch (x) {} setTimeout(function() { ld.style.display = 'none'; }, 600); }
+  function quita() { setTimeout(refrescaSub, 1500); setTimeout(infoPermiso, 2500); ld.className = 'off'; try { toInner({ bk: 'giro' }, '*'); } catch (x) {} setTimeout(function() { ld.style.display = 'none'; }, 600); }
   // la pantalla de carga dura: jornada en juego = hasta que la tabla esta pintada; si no (antes de empezar o terminada) = al menos 3 segundos y hasta que la tabla esta pintada
   var t0 = Date.now(), listo = false;
   function fin(vivo) { setTimeout(quita, vivo ? 0 : Math.max(0, 3000 - (Date.now() - t0))); }

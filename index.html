@@ -276,6 +276,13 @@
   #ins .nv .in { min-width: 128px; padding: 0 14px; background: #ffd60a; color: #000; font-size: 14px; letter-spacing: .3px; }
   #ins .nv .ip { min-width: 46px; }
   @media (max-width: 350px) { #ins .nv { gap: 4px; } #ins .nv .in { min-width: 0; padding: 0 10px; font-size: 12px; } #ins .dts { gap: 3px; } #ins .dts i { width: 7px; height: 7px; } #ins .nv .ip { min-width: 38px; } }
+  #ins { align-items: flex-start; padding-top: calc(10px + env(safe-area-inset-top, 0px)); background: rgba(8,4,28,.97); }
+  #ins .ic { display: flex; flex-direction: column; }
+  #ins .it { order: 1; font-size: 12.5px; margin: 0 2px 6px; }
+  #ins .cap { order: 2; min-height: 5.2em; margin: 0 2px 8px; font-size: 16px; }
+  #ins .nv { order: 3; margin-bottom: 10px; }
+  #ins .sc { order: 4; }
+  #ins .ix, #ins .ok { display: none !important; }
   @keyframes inl { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.07); opacity: .75; } }
   @keyframes ins { 0%, 100% { transform: translateY(5px); } 50% { transform: translateY(-5px); } }
   @keyframes pgs { 0%, 100% { transform: translateY(8px); } 50% { transform: translateY(-8px); } }
@@ -380,15 +387,16 @@
   // primero se ve la guia con maquetas animadas y luego se queda una barra pequena arriba (la parte de la pagina que sigue visible con los menus abiertos) con el paso actual
   (function() {
     var ins = document.getElementById('ins'); if (!ins) return;
-    var T = ['<b>1.</b> Toca el icono de las <b>tres rayitas (≡)</b>, a la izquierda de la dirección.<br><small style="font-weight:400;opacity:.85">Hazlo en tu móvil y, cuando termines cada paso, toca SIGUIENTE.</small>', '<b>2.</b> Toca <b>«Compartir»</b>.', '<b>3.</b> Toca <b>«Ver más»</b> (la flecha ⌄) para abrir la lista completa.', '<b>4.</b> <b>Baja con el dedo</b> hasta el final y toca <b>«Añadir a pantalla de inicio»</b>.', '<b>5.</b> Comprueba que <b>«Abrir como app web»</b> está activado (en verde).', '<b>6.</b> Toca <b>«Añadir»</b>, arriba a la derecha.', '<b>7.</b> ¡Ya está el <b>icono nuevo</b> en tu pantalla de inicio! Ahora hay que <b>cerrar la pestaña de Safari</b>.', '<b>8.</b> <b>Cierra la pestaña:</b> desliza el dedo <b>hacia arriba desde el borde de abajo</b>, haz una pausa a mitad de pantalla y <b>arrastra la pestaña de Safari hacia arriba</b> hasta que desaparezca.', '<b>9.</b> Abre la quiniela <b>solo desde el icono nuevo</b>, nunca desde Safari. Al terminar tu apuesta, <b>acepta los avisos</b>.'];
+    var T = ['<b>1.</b> Toca el icono de las <b>tres rayitas (≡)</b>, a la izquierda de la dirección.<br><small style="font-weight:400;opacity:.85">Los pasos 1 a 6 cambian solos cada 6 segundos: no toques esta pantalla mientras haces el paso.</small>', '<b>2.</b> Toca <b>«Compartir»</b>.', '<b>3.</b> Toca <b>«Ver más»</b> (la flecha ⌄) para abrir la lista completa.', '<b>4.</b> <b>Baja con el dedo</b> hasta el final y toca <b>«Añadir a pantalla de inicio»</b>.', '<b>5.</b> Comprueba que <b>«Abrir como app web»</b> está activado (en verde).', '<b>6.</b> Toca <b>«Añadir»</b>, arriba a la derecha. Cuando termine, toca <b>SIGUIENTE</b> aquí arriba.', '<b>7.</b> ¡Ya está el <b>icono nuevo</b> en tu pantalla de inicio! Ahora hay que <b>cerrar la pestaña de Safari</b>.', '<b>8.</b> <b>Cierra la pestaña:</b> desliza el dedo <b>hacia arriba desde el borde de abajo</b>, haz una pausa a mitad de pantalla y <b>arrastra la pestaña de Safari hacia arriba</b> hasta que desaparezca.', '<b>9.</b> Abre la quiniela <b>solo desde el icono nuevo</b>, nunca desde Safari. Al terminar tu apuesta, <b>acepta los avisos</b>.'];
     var st = ins.querySelectorAll('.st'), dt = ins.querySelectorAll('.dts i'), cap = ins.querySelector('.cap'), bot = ins.querySelector('.bot'), k = 0, tm = null;
     var mx = 0, okB = ins.querySelector('.ok'), ipB = ins.querySelector('.ip'), inB = ins.querySelector('.in');
-    function ve(n) { k = Math.max(0, Math.min(st.length - 1, n)); if (k > mx) mx = k; okB.hidden = mx < st.length - 1; ins.classList.toggle('fin', mx >= st.length - 1); ipB.style.visibility = k === 0 ? 'hidden' : 'visible'; inB.style.visibility = k === st.length - 1 ? 'hidden' : 'visible'; var i; for (i = 0; i < st.length; i++) { st[i].classList.toggle('on', i === k); dt[i].classList.toggle('on', i === k); } cap.innerHTML = T[k]; if (ins.classList.contains('mini') && k === 0) bot.removeAttribute('hidden'); else bot.setAttribute('hidden', ''); }
-    function auto() { clearInterval(tm); }   // sin avance automatico: cada paso espera a que el jugador toque SIGUIENTE
+    function ve(n) { k = Math.max(0, Math.min(st.length - 1, n)); if (k > mx) mx = k; okB.hidden = mx < st.length - 1; ins.classList.toggle('fin', mx >= st.length - 1); ipB.style.visibility = k === 0 ? 'hidden' : 'visible'; inB.style.visibility = k === st.length - 1 ? 'hidden' : 'visible'; var i; for (i = 0; i < st.length; i++) { st[i].classList.toggle('on', i === k); dt[i].classList.toggle('on', i === k); } cap.innerHTML = T[k]; if (k === 0 && !ins.classList.contains('ya')) bot.removeAttribute('hidden'); else bot.setAttribute('hidden', ''); }
+    // los menus de Safari se dibujan por encima y, si se toca la pagina, se cierran: los pasos 1 a 6 avanzan SOLOS cada 6 s (sin tocar nada); los pasos 7 a 9 (ya sin menus) avanzan con SIGUIENTE
+    function auto() { clearInterval(tm); tm = setInterval(function() { if (k < 5) ve(k + 1); else clearInterval(tm); }, 6000); }
     function cierra() { clearInterval(tm); ins.hidden = true; }
     ins.querySelector('.ix').addEventListener('click', cierra);
-    ins.querySelector('.ip').addEventListener('click', function() { clearInterval(tm); ve(k - 1); });
-    ins.querySelector('.in').addEventListener('click', function() { clearInterval(tm); ve(k + 1); });
+    ins.querySelector('.ip').addEventListener('click', function() { ve(k - 1); auto(); });
+    ins.querySelector('.in').addEventListener('click', function() { ve(k + 1); auto(); });
     ins.querySelector('.ok').addEventListener('click', function() { clearInterval(tm); ins.classList.add('mini'); ve(0); });   // la guia se encoge a una barra arriba mientras haces los pasos
     var abierta = false;
     window.bkInstala = function() {
@@ -415,9 +423,27 @@
     };
   })();
   function jorOK(n) { return Number(n) >= 12; }
-  if (/[?&]guia=1/.test(location.search)) setTimeout(function() { try { window.bkInstala(); } catch (x) {} }, 600);   // la guia de instalacion en iPhone se pide a partir de la jornada 12
-  try { if (localStorage.getItem('bk_inst') === '1') setTimeout(function() { try { window.bkYa(); } catch (x) {} }, 150); } catch (x) {}   // la ultima vez la web dijo que ya esta instalada
-  try { if (jorOK(localStorage.getItem('bk_jor'))) setTimeout(function() { try { window.bkInstala(); } catch (x) {} }, 400); } catch (x) {}   // la ultima vez ya se veia la 12: sale nada mas entrar (encima de la pantalla de carga)
+  // el mensaje de instalacion (iPhone en Safari) sale cuando la pagina ya se ve (pantalla de carga quitada) y la jornada es la 12 o posterior; es UN solo mensaje: sin cerrar, con los pasos dentro
+
+  // ?diag=1 : registro en pantalla de lo que ve la pagina cuando se abren los menus de Safari (para comprobar que se puede detectar)
+  if (/[?&]diag=1/.test(location.search)) (function() {
+    var box = document.createElement('div'); box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99;max-height:38vh;overflow:hidden;background:#000;color:#0f0;font:10px/1.25 monospace;padding:4px 6px;white-space:pre-wrap;pointer-events:none';
+    document.body.appendChild(box); var L = [];
+    function lg(t) { var d = new Date(); L.push(('0' + d.getMinutes()).slice(-2) + ':' + ('0' + d.getSeconds()).slice(-2) + ' ' + t); if (L.length > 14) L.shift(); box.textContent = L.join('\n'); }
+    ['blur', 'focus', 'pagehide', 'pageshow', 'resize', 'orientationchange', 'touchstart', 'touchend', 'scroll'].forEach(function(n) { window.addEventListener(n, function(e) { lg('win ' + n + (e.target && e.target.tagName ? ' ' + e.target.tagName : '')); }, true); });
+    document.addEventListener('visibilitychange', function() { lg('visibility ' + document.visibilityState); });
+    try { window.visualViewport.addEventListener('resize', function() { lg('vv resize ' + Math.round(visualViewport.width) + 'x' + Math.round(visualViewport.height)); }); window.visualViewport.addEventListener('scroll', function() { lg('vv scroll'); }); } catch (x) {}
+    var ph = innerHeight + '|' + (window.visualViewport ? visualViewport.height : ''); setInterval(function() { var c = innerHeight + '|' + (window.visualViewport ? visualViewport.height : ''); if (c !== ph) { ph = c; lg('alto ' + c); } }, 300);
+    lg('diag listo ' + innerWidth + 'x' + innerHeight);
+  })();
+  var PAGEVIS = false;
+  function guiaAhora() {
+    if (!PAGEVIS) return;
+    var forzar = /[?&]guia=1/.test(location.search), j = false;
+    try { j = jorOK(localStorage.getItem('bk_jor')); } catch (x) {}
+    if (!j && !forzar) return;
+    try { if (localStorage.getItem('bk_inst') === '1') window.bkYa(); else window.bkInstala(); } catch (x) {}
+  }
   var pgE = document.getElementById('pg');
   function guiaOn() { try { if (esIOS() && pgE) pgE.hidden = false; } catch (x) {} }   // iPhone: circulo sobre "Permitir" y el texto debajo, solo mientras esta abierta la ventana de iOS
   function guiaOff() { try { if (pgE) pgE.hidden = true; } catch (x) {} }
@@ -443,19 +469,19 @@
       swReg().then(function(reg) { return reg.pushManager.getSubscription().then(function(sub) { return sub ? sub : reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(VAPID_PUB) }); }); }).then(function(sub) { try { localStorage.setItem('bk_push', '1'); } catch (x) {} pintaBell(true); mandaSub(sub); }).catch(function() { pintaBell(false); });
     } catch (x) {}
   }
-  function quita() { setTimeout(refrescaSub, 1500); setTimeout(infoPermiso, 2500); ld.className = 'off'; try { toInner({ bk: 'giro' }, '*'); } catch (x) {} setTimeout(function() { ld.style.display = 'none'; }, 600); }
+  function quita() { setTimeout(refrescaSub, 1500); setTimeout(infoPermiso, 2500); ld.className = 'off'; try { toInner({ bk: 'giro' }, '*'); } catch (x) {} setTimeout(function() { ld.style.display = 'none'; }, 600); setTimeout(function() { PAGEVIS = true; guiaAhora(); }, 700); }
   // la pantalla de carga dura: jornada en juego = hasta que la tabla esta pintada; si no (antes de empezar o terminada) = al menos 3 segundos y hasta que la tabla esta pintada
   var t0 = Date.now(), listo = false;
   function fin(vivo) { setTimeout(quita, vivo ? 0 : Math.max(0, 3000 - (Date.now() - t0))); }
   window.addEventListener('message', function(e) {
     var d = e.data; if (d && d.bk === 'nombre' && d.nom) { try { localStorage.setItem('bk_nom', String(d.nom)); } catch (x) {} }
-    if (d && d.bk === 'inst') { try { if (d.v) { localStorage.setItem('bk_inst', '1'); window.bkYa(); } else { localStorage.removeItem('bk_inst'); if (window.bkYaOff) { window.bkYaOff(); if (jorOK(localStorage.getItem('bk_jor'))) window.bkInstala(); } } } catch (x) {} }   // la web dice si este jugador ya tiene la app instalada
+    if (d && d.bk === 'inst') { try { if (d.v) { localStorage.setItem('bk_inst', '1'); guiaAhora(); } else { localStorage.removeItem('bk_inst'); if (window.bkYaOff) { window.bkYaOff(); guiaAhora(); } } } catch (x) {} }   // la web dice si este jugador ya tiene la app instalada
     if (d && d.bk === 'olvida') { try { localStorage.removeItem('bk_nom'); localStorage.removeItem('bk_inst'); history.replaceState(null, '', location.pathname); } catch (x) {} }   // el administrador ha borrado este dispositivo
-    if (d && d.bk === 'jor' && d.jor) { try { localStorage.setItem('bk_jor', String(d.jor)); } catch (x) {} if (jorOK(d.jor)) { try { window.bkInstala(); } catch (x) {} } }   // aparece o se pasa a la jornada 12 o posterior
+    if (d && d.bk === 'jor' && d.jor) { try { localStorage.setItem('bk_jor', String(d.jor)); } catch (x) {} guiaAhora(); }   // aparece o se pasa a la jornada 12 o posterior
     if (listo || !d || d.bk !== 'listo') return;
     listo = true;
     try { localStorage.setItem('bk_vivo', d.vivo ? '1' : '0'); if (d.fecha) localStorage.setItem('bk_fecha', d.fecha); if (d.jor) localStorage.setItem('bk_jor', d.jor); if (d.nom) localStorage.setItem('bk_nom', d.nom); } catch (x) {}
-    if (jorOK(d.jor)) { try { window.bkInstala(); } catch (x) {} }   // la web ya muestra la jornada 12 o posterior
+    guiaAhora();   // la web ya muestra la jornada 12 o posterior
     fin(!!d.vivo);
   });
   // respaldo (si la web no avisa): al cargar el marco se espera 1,5 s el aviso y si no llega se usa el ultimo estado conocido

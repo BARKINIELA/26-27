@@ -2,12 +2,13 @@
 self.addEventListener('install', function() { self.skipWaiting(); });
 self.addEventListener('activate', function(e) { e.waitUntil(self.clients.claim()); });
 self.addEventListener('message', function(e) {
-  var d = e.data; if (!d || d.bk !== 'nombre') return;
-  e.waitUntil(caches.open('bk').then(function(c) { return c.put('nombre', new Response(String(d.n || ''))); }));
+  var d = e.data; if (!d || (d.bk !== 'nombre' && d.bk !== 'jor')) return;
+  e.waitUntil(caches.open('bk').then(function(c) { return c.put(d.bk === 'jor' ? 'jor' : 'nombre', new Response(String(d.n || ''))); }));   // nombre del jugador y numero de jornada, para el aviso
 });
 self.addEventListener('push', function(e) {
-  e.waitUntil(caches.open('bk').then(function(c) { return c.match('nombre'); }).then(function(r) { return r ? r.text() : ''; }).catch(function() { return ''; }).then(function(n) {
-    return self.registration.showNotification('BARKINIELA', {
+  e.waitUntil(caches.open('bk').then(function(c) { return Promise.all([c.match('nombre'), c.match('jor')]); }).then(function(rs) { return Promise.all([rs[0] ? rs[0].text() : '', rs[1] ? rs[1].text() : '']); }).catch(function() { return ['', '']; }).then(function(v) {
+    var n = v[0], jr = Number(v[1]) || 0;
+    return self.registration.showNotification(jr ? 'JORNADA ' + jr : '', {   /* titulo: la jornada (iOS anade debajo "from" + nombre de la app, eso no se puede quitar) */
       body: (n ? n + ', aste' : 'Aste') + ' hontako apustua osatu gabe do!',
       icon: 'icon-192.png', badge: 'icon-192.png', tag: 'apuesta', renotify: true, vibrate: [250, 120, 250, 120, 250], timestamp: Date.now(), data: { u: self.registration.scope + '?aviso=1' }   // aviso=1: la web se abre en la jornada de los avisos
     });

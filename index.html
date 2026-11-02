@@ -367,7 +367,8 @@
   });
   // al pulsar TERMINAR en la web: pide el permiso (si hace falta, con ese mismo toque) y activa los avisos de este navegador; si ya estaban activados solo renueva el enlace con el jugador
   function infoPermiso() {   // dice a la web el permiso de este navegador: granted / denied / default
-    try { if (!pushOK() || (esIOS() && !enStandalone())) return; toInner({ bk: 'permiso', e: Notification.permission === 'denied' ? 'd' : Notification.permission === 'granted' ? 'g' : (esIOS() ? 'i' : 'n') }, '*'); } catch (x) {}
+    try { if (esIOS() && !enStandalone()) { toInner({ bk: 'permiso', e: 'n' }, '*'); return; }   // iPhone en Safari (no en el icono): siempre blanco; el color sigue a la ultima visita
+      if (!pushOK()) return; toInner({ bk: 'permiso', e: Notification.permission === 'denied' ? 'd' : Notification.permission === 'granted' ? 'g' : (esIOS() ? 'i' : 'n') }, '*'); } catch (x) {}
   }
   window.addEventListener('message', function(e) {
     var d = e.data; if (!d || d.bk !== 'activar') return;
@@ -417,6 +418,7 @@
       function z() { ve(7 + (j % 2)); cap.innerHTML = (j % 2 === 0) ? '<b>CIERRA ESTA PESTAÑA DE SAFARI:</b> desliza el dedo hacia arriba desde el borde de abajo, haz una pausa y arrastra la pestaña hacia arriba hasta que desaparezca.' : '<b>ENTRA DESDE EL ICONO</b> de BARKINIELA de tu pantalla de inicio. Solo así te llegarán los avisos.'; j++; }
       z(); tm = setInterval(z, 4500);
     };
+    window.bkOcultaGuia = function() { clearInterval(tm); YAMODE = false; abierta = false; ins.classList.remove('ya'); ins.hidden = true; ins.querySelector('.it').textContent = 'Instala la app para recibir los avisos'; };   // la web ya no ensena la jornada 12 o posterior
     window.bkYaOff = function() {
       if (!YAMODE) return;
       YAMODE = false; abierta = false; clearInterval(tm); ins.classList.remove('ya'); ins.hidden = true; ins.querySelector('.it').textContent = 'Instala la app para recibir los avisos';
@@ -436,11 +438,10 @@
     var ph = innerHeight + '|' + (window.visualViewport ? visualViewport.height : ''); setInterval(function() { var c = innerHeight + '|' + (window.visualViewport ? visualViewport.height : ''); if (c !== ph) { ph = c; lg('alto ' + c); } }, 300);
     lg('diag listo ' + innerWidth + 'x' + innerHeight);
   })();
-  var PAGEVIS = false;
+  var PAGEVIS = false, JORV = 0;   // JORV: jornada que la web esta ensenando AHORA (solo la de esta visita, nunca la recordada de otra vez)
   function guiaAhora() {
     if (!PAGEVIS) return;
-    var forzar = /[?&]guia=1/.test(location.search), j = false;
-    try { j = jorOK(localStorage.getItem('bk_jor')); } catch (x) {}
+    var forzar = /[?&]guia=1/.test(location.search), j = jorOK(JORV);
     if (!j && !forzar) return;
     try { if (localStorage.getItem('bk_inst') === '1') window.bkYa(); else window.bkInstala(); } catch (x) {}
   }
@@ -477,11 +478,11 @@
     var d = e.data; if (d && d.bk === 'nombre' && d.nom) { try { localStorage.setItem('bk_nom', String(d.nom)); } catch (x) {} }
     if (d && d.bk === 'inst') { try { if (d.v) { localStorage.setItem('bk_inst', '1'); guiaAhora(); } else { localStorage.removeItem('bk_inst'); if (window.bkYaOff) { window.bkYaOff(); guiaAhora(); } } } catch (x) {} }   // la web dice si este jugador ya tiene la app instalada
     if (d && d.bk === 'olvida') { try { localStorage.removeItem('bk_nom'); localStorage.removeItem('bk_inst'); history.replaceState(null, '', location.pathname); } catch (x) {} }   // el administrador ha borrado este dispositivo
-    if (d && d.bk === 'jor' && d.jor) { try { localStorage.setItem('bk_jor', String(d.jor)); } catch (x) {} guiaAhora(); }   // aparece o se pasa a la jornada 12 o posterior
+    if (d && d.bk === 'jor' && d.jor) { JORV = Number(d.jor) || 0; try { localStorage.setItem('bk_jor', String(d.jor)); } catch (x) {} if (jorOK(JORV)) guiaAhora(); else if (window.bkOcultaGuia && !/[?&]guia=1/.test(location.search)) window.bkOcultaGuia(); }   // aparece o se pasa a la jornada 12 o posterior
     if (listo || !d || d.bk !== 'listo') return;
     listo = true;
     try { localStorage.setItem('bk_vivo', d.vivo ? '1' : '0'); if (d.fecha) localStorage.setItem('bk_fecha', d.fecha); if (d.jor) localStorage.setItem('bk_jor', d.jor); if (d.nom) localStorage.setItem('bk_nom', d.nom); } catch (x) {}
-    guiaAhora();   // la web ya muestra la jornada 12 o posterior
+    JORV = Number(d.jor) || 0; guiaAhora();   // la web ya muestra la jornada 12 o posterior
     fin(!!d.vivo);
   });
   // respaldo (si la web no avisa): al cargar el marco se espera 1,5 s el aviso y si no llega se usa el ultimo estado conocido

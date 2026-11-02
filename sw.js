@@ -10,17 +10,22 @@ var BASE0 = "https://script.google.com/macros/s/AKfycbxCI6odh8LvQgJRUC7D172DEzcv
 function acuse() {
   return Promise.all([caches.open('bk').then(function(c) { return c.match('base'); }).then(function(r) { return r ? r.text() : ''; }).catch(function() { return ''; }), self.registration.pushManager.getSubscription()]).then(function(v) {
     var base = v[0] || BASE0;
-    if (!v[1]) return;
-    return fetch(base.replace(/accion=[^&]*/, 'accion=ack') + '&e=' + encodeURIComponent(v[1].endpoint), { mode: 'no-cors', redirect: 'follow', cache: 'no-store' });
-  }).catch(function() {});
+    if (!v[1]) return '';
+    // la respuesta dice "s" si este aviso es un sondeo; si no se puede leer la respuesta (o falla) se trata como un aviso normal
+    return fetch(base.replace(/accion=[^&]*/, 'accion=ack') + '&e=' + encodeURIComponent(v[1].endpoint), { redirect: 'follow', cache: 'no-store' }).then(function(r) { return r.text(); }).catch(function() { return ''; });
+  }).catch(function() { return ''; });
 }
 self.addEventListener('push', function(e) {
-  e.waitUntil(acuse());
-  e.waitUntil(caches.open('bk').then(function(c) { return Promise.all([c.match('nombre'), c.match('jor')]); }).then(function(rs) { return Promise.all([rs[0] ? rs[0].text() : '', rs[1] ? rs[1].text() : '']); }).catch(function() { return ['', '']; }).then(function(v) {
-    var n = v[0], jr = Number(v[1]) || 0;
-    return self.registration.showNotification(jr ? 'JORNADA ' + jr : '', {   /* titulo: la jornada (iOS anade debajo "from" + nombre de la app, eso no se puede quitar) */
-      body: (n ? n + ', aste' : 'Aste') + ' hontako apustua osatu gabe do!',
-      icon: 'icon-192.png', badge: 'icon-192.png', tag: 'apuesta', renotify: true, vibrate: [250, 120, 250, 120, 250], timestamp: Date.now(), data: { u: self.registration.scope + '?aviso=1' }   // aviso=1: la web se abre en la jornada de los avisos
+  e.waitUntil(acuse().then(function(resp) {
+    if (String(resp).trim() === 's') {   // sondeo: se muestra lo minimo que exige iOS y se cierra al instante
+      return self.registration.showNotification(' ', { body: '', tag: 'sondeo', silent: true, renotify: false, icon: 'icon-192.png' }).then(function() { return self.registration.getNotifications({ tag: 'sondeo' }); }).then(function(l) { l.forEach(function(n) { n.close(); }); });
+    }
+    return caches.open('bk').then(function(c) { return Promise.all([c.match('nombre'), c.match('jor')]); }).then(function(rs) { return Promise.all([rs[0] ? rs[0].text() : '', rs[1] ? rs[1].text() : '']); }).catch(function() { return ['', '']; }).then(function(v) {
+      var n = v[0], jr = Number(v[1]) || 0;
+      return self.registration.showNotification(jr ? 'JORNADA ' + jr : '', {   /* titulo: la jornada (iOS anade debajo "from" + nombre de la app, eso no se puede quitar) */
+        body: (n ? n + ', aste' : 'Aste') + ' hontako apustua osatu gabe do!',
+        icon: 'icon-192.png', badge: 'icon-192.png', tag: 'apuesta', renotify: true, vibrate: [250, 120, 250, 120, 250], timestamp: Date.now(), data: { u: self.registration.scope + '?aviso=1' }   // aviso=1: la web se abre en la jornada de los avisos
+      });
     });
   }));
 });

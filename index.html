@@ -184,6 +184,9 @@
   #pg .pga { position: absolute; left: calc(50% + 74px); top: calc(51.3% + 127px + 8px); width: 46px; height: 54px; margin-left: -23px; animation: pgs .8s ease-in-out infinite; filter: drop-shadow(0 0 5px rgba(0,0,0,.9)) drop-shadow(0 0 10px rgba(255,214,10,.7)); }
   #pg .pgt { position: absolute; left: 50%; top: calc(51.3% + 127px + 72px); width: min(88vw, 340px); box-sizing: border-box; transform: translateX(-50%); text-align: center; padding: 11px 14px; border-radius: 12px; background: #000; color: #ffd60a; font: 600 19px/1.25 -apple-system, Helvetica, Arial, sans-serif; letter-spacing: .3px; }
   #pg .pgt b { font-weight: 900; }
+  /* Android (Chrome): la ventana de permiso sale ARRIBA; la flecha apunta hacia arriba, al boton Permitir, y el texto va debajo */
+  #pg.an .pga { left: 66%; top: 27%; bottom: auto; animation: pgs .8s ease-in-out infinite; }
+  #pg.an .pgt { top: calc(27% + 66px); bottom: auto; }
 
   #ins { position: fixed; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center; padding: 14px; background: rgba(8,4,28,.9); font-family: -apple-system, Helvetica, Arial, sans-serif; }
   #ins[hidden] { display: none; }
@@ -534,7 +537,7 @@
     if (d.m && p === 'denied') { aviso('Los avisos están bloqueados. Actívalos en los ajustes del navegador (permisos de esta web).'); return; }
     pideAvisos(p);
     // si Chrome no ha enseñado su cuadro (pasa cuando el toque se hizo dentro de la web incrustada), sale un boton grande en esta pagina: ese toque si cuenta
-    if (p === 'default' && !esIOS()) setTimeout(function() { if (Notification.permission === 'default') pide.hidden = false; }, 1500);
+    if (p === 'default' && !esIOS() && !/Android/i.test(navigator.userAgent)) setTimeout(function() { if (Notification.permission === 'default') pide.hidden = false; }, 1500);   // el boton amarillo ya no sale en Android: mientras esta abierta la ventana de Chrome solo se ve la flecha
   });
   var pide = document.getElementById('pide');
   pide.addEventListener('click', function() { pide.hidden = true; pideAvisos('default'); });
@@ -601,7 +604,7 @@
     try { var bi = localStorage.getItem('bk_inst'); if (bi === '2') { if (window.bkYaOff) window.bkYaOff(); } else if (bi === '1' || (localStorage.getItem('bk_gh') === '1' && !window.bkNo)) window.bkYa(); else window.bkInstala(); } catch (x) {}   // 2 = app instalada y avisos activados: no sale nada
   }
   var pgE = document.getElementById('pg');
-  function guiaOn() { try { if (esIOS() && pgE) pgE.hidden = false; } catch (x) {} }   // iPhone: circulo sobre "Permitir" y el texto debajo, solo mientras esta abierta la ventana de iOS
+  function guiaOn() { try { var an = !esIOS() && /Android/i.test(navigator.userAgent); if ((esIOS() || an) && pgE) { pgE.classList.toggle('an', an); pgE.hidden = false; } } catch (x) {} }   // iPhone: circulo sobre "Permitir" y el texto debajo, solo mientras esta abierta la ventana de iOS
   function guiaOff() { try { if (pgE) pgE.hidden = true; } catch (x) {} }
   function pideAvisos(p) {
     var pp = p === 'default' ? (guiaOn(), Notification.requestPermission()) : Promise.resolve(p);   // sin responder: se vuelve a preguntar cada vez que termina una apuesta

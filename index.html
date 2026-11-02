@@ -300,7 +300,7 @@
   var t0 = Date.now(), listo = false;
   function fin(vivo) { setTimeout(quita, vivo ? 0 : Math.max(0, 3000 - (Date.now() - t0))); }
   window.addEventListener('message', function(e) {
-    var d = e.data;
+    var d = e.data; if (d && d.bk === 'nombre' && d.nom) { try { localStorage.setItem('bk_nom', String(d.nom)); } catch (x) {} }
     if (listo || !d || d.bk !== 'listo') return;
     listo = true;
     try { localStorage.setItem('bk_vivo', d.vivo ? '1' : '0'); if (d.fecha) localStorage.setItem('bk_fecha', d.fecha); if (d.jor) localStorage.setItem('bk_jor', d.jor); if (d.nom) localStorage.setItem('bk_nom', d.nom); } catch (x) {}

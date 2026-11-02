@@ -385,7 +385,7 @@
       for (var q = 0; q < 13; q++) { var x = 22 + q * 4.67; P.push([x, 19.9 + 1.4 * Math.pow(Math.abs(x - 50) / 28, 2), 8.1, (x - 50) / 28 * 18, 10 + (q % 2) * 5]); }
       var els = P.map(function (p) { var e = document.createElement('div'); e.className = 'ec2'; e.style.animationDelay = (-R() * 1.5).toFixed(2) + 's'; e.style.cssText += ';left:' + ((p[0] * 3.9 - 16) / 358 * 100).toFixed(2) + '%;top:' + ((p[1] * 7.8 - 154.2) / 420.6 * 100).toFixed(2) + '%;width:' + (p[2] * 3.9 / 358 * 100).toFixed(2) + '%;transform:translate(-50%,-50%) rotate(' + p[3].toFixed(1) + 'deg);z-index:' + p[4]; wr.appendChild(e); return e; });
       function mez() { var o = []; for (var i = 0; i < N; i++) o.push(i); o.sort(function () { return Math.random() - .5; }); els.forEach(function (e, i) { e.style.backgroundImage = 'url(' + U[o[i % N]] + ')'; }); }
-      mez(); setInterval(mez, 7000);
+      mez();   /* los escudos de los lados y del arco cambian de sitio cada vez que se carga la pantalla, no mientras se ve */
     }
   } catch (x) {}
 })();
@@ -551,7 +551,7 @@
     var d = e.data; if (d && d.bk === 'nombre' && d.nom) { try { localStorage.setItem('bk_nom', String(d.nom)); } catch (x) {} }
     if (d && d.bk === 'inst') { try { if (d.v && d.act) { localStorage.setItem('bk_inst', '2'); if (window.bkOcultaGuia) window.bkOcultaGuia(); } else if (d.v) { localStorage.setItem('bk_inst', '1'); guiaAhora(); } else { localStorage.removeItem('bk_inst'); if (window.bkYaOff) { window.bkYaOff(); guiaAhora(); } } } catch (x) {} }   // la web dice si este jugador ya tiene la app instalada
     if (d && d.bk === 'olvida') { try { localStorage.removeItem('bk_nom'); localStorage.removeItem('bk_inst'); history.replaceState(null, '', location.pathname); } catch (x) {} }   // el administrador ha borrado este dispositivo
-    if (d && d.bk === 'jor' && d.jor) { JORV = Number(d.jor) || 0; try { localStorage.setItem('bk_jor', String(d.jor)); } catch (x) {} if (jorOK(JORV)) guiaAhora(); else if (window.bkOcultaGuia && !/[?&]guia=1/.test(location.search)) window.bkOcultaGuia(); }   // aparece o se pasa a la jornada 12 o posterior
+    if (d && d.bk === 'jor' && d.jor) { JORV = Number(d.jor) || 0; try { navigator.serviceWorker.ready.then(function(r) { if (r.active) r.active.postMessage({ bk: 'jor', n: JORV }); }); } catch (x) {}   /* el aviso lleva el numero de jornada como titulo */ try { localStorage.setItem('bk_jor', String(d.jor)); } catch (x) {} if (jorOK(JORV)) guiaAhora(); else if (window.bkOcultaGuia && !/[?&]guia=1/.test(location.search)) window.bkOcultaGuia(); }   // aparece o se pasa a la jornada 12 o posterior
     if (listo || !d || d.bk !== 'listo') return;
     listo = true;
     try { localStorage.setItem('bk_vivo', d.vivo ? '1' : '0'); if (d.fecha) localStorage.setItem('bk_fecha', d.fecha); if (d.jor) localStorage.setItem('bk_jor', d.jor); if (d.nom) localStorage.setItem('bk_nom', d.nom); } catch (x) {}

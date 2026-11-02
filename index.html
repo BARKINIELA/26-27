@@ -276,7 +276,7 @@
       return swReg().then(function(reg) { return reg.pushManager.getSubscription().then(function(sub) {
         return sub ? sub : reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(VAPID_PUB) });
       }); }).then(function(s) { try { localStorage.setItem('bk_push', '1'); } catch (x) {} pintaBell(true); mandaSub(s); });
-    }).catch(function() { aviso('No se han podido activar los avisos en este navegador.'); });
+    }).catch(function(er) { aviso('No se han podido activar los avisos: ' + ((er && er.name) ? er.name + ' - ' : '') + ((er && er.message) ? er.message : 'error desconocido') + (esIOS() ? '' : ' (Chrome: actualízalo, comprueba Servicios de Google Play y la fecha automática)')); });
   }
   window.addEventListener('message', function(e) {
     var d = e.data; if (!d || d.bk !== 'pushok') return;

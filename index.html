@@ -304,7 +304,7 @@
 .tit.tbig .fg{display:none!important}
 .tit.tbig .trs b.ec{background:center/11px 11px no-repeat;animation:none!important;filter:none!important}
 .escw{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:6}
-.escw .ec2{position:absolute;display:block;aspect-ratio:1;background:center/contain no-repeat;animation:ebob 1.5s ease-in-out infinite}
+.escw .ec2{position:absolute;display:block;aspect-ratio:1;background:center/contain no-repeat;animation:ebob 1.5s ease-in-out infinite}.escw .ec2.cw{background-color:#000;background-size:78%;border-radius:50%;box-shadow:0 0 0 1px rgba(255,255,255,.35)}
 @keyframes egl{0%{filter:drop-shadow(0 0 .7px #f52dff)}25%{filter:drop-shadow(0 0 .7px #fff)}33%{filter:drop-shadow(0 0 .7px #ff8a00)}58%{filter:drop-shadow(0 0 .7px #fff)}66%{filter:drop-shadow(0 0 .7px #10b4ff)}91%{filter:drop-shadow(0 0 .7px #fff)}100%{filter:drop-shadow(0 0 .7px #f52dff)}}
 @keyframes ebob{0%,100%{translate:0 0;rotate:0deg}50%{translate:0 -7%;rotate:5deg}}
 #tl .ong{filter:drop-shadow(.6px 2px 0 #a14f00) drop-shadow(.6px 2px 0 #7d3d00) drop-shadow(.6px 2px 0 #592b00) drop-shadow(0 2px 3px rgba(0,0,0,.5))}
@@ -384,7 +384,7 @@
       pile(14, [4, 4, 4, 3]); pile(86, [4, 4, 4, 3]);
       for (var q = 0; q < 13; q++) { var x = 22 + q * 4.67; P.push([x, 19.9 + 1.4 * Math.pow(Math.abs(x - 50) / 28, 2), 8.1, (x - 50) / 28 * 18, 10 + (q % 2) * 5]); }
       var els = P.map(function (p) { var e = document.createElement('div'); e.className = 'ec2'; e.style.animationDelay = (-R() * 1.5).toFixed(2) + 's'; e.style.cssText += ';left:' + ((p[0] * 3.9 - 16) / 358 * 100).toFixed(2) + '%;top:' + ((p[1] * 7.8 - 154.2) / 420.6 * 100).toFixed(2) + '%;width:' + (p[2] * 3.9 / 358 * 100).toFixed(2) + '%;transform:translate(-50%,-50%) rotate(' + p[3].toFixed(1) + 'deg);z-index:' + p[4]; wr.appendChild(e); return e; });
-      function mez() { var o = []; for (var i = 0; i < N; i++) o.push(i); o.sort(function () { return Math.random() - .5; }); els.forEach(function (e, i) { e.style.backgroundImage = 'url(' + U[o[i % N]] + ')'; }); }
+      function mez() { var o = []; for (var i = 0; i < N; i++) o.push(i); o.sort(function () { return Math.random() - .5; }); els.forEach(function (e, i) { e.style.backgroundImage = 'url(' + U[o[i % N]] + ')'; e.classList.toggle('cw', o[i % N] === 41 || o[i % N] === 42); }); }
       mez();   /* los escudos de los lados y del arco cambian de sitio cada vez que se carga la pantalla, no mientras se ve */
     }
   } catch (x) {}

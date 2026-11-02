@@ -6,10 +6,12 @@ self.addEventListener('message', function(e) {
   e.waitUntil(caches.open('bk').then(function(c) { return c.put(d.bk === 'jor' ? 'jor' : (d.bk === 'base' ? 'base' : 'nombre'), new Response(String(d.n || ''))); }));   // nombre del jugador y numero de jornada, para el aviso
 });
 // acuse de recibo: cuando le llega un aviso al movil, el movil avisa al servidor; asi la hoja sabe si los avisos le estan llegando de verdad
+var BASE0 = "https://script.google.com/macros/s/AKfycbxCI6odh8LvQgJRUC7D172DEzcvVydZksn-ia9R61rD37MkHKngCWjvbymc8b9dJkMR2A/exec?token=barkiniela2026secreto&accion=tabla";   // direccion de la hoja: se usa si la pagina todavia no se la ha pasado
 function acuse() {
-  return Promise.all([caches.open('bk').then(function(c) { return c.match('base'); }).then(function(r) { return r ? r.text() : ''; }), self.registration.pushManager.getSubscription()]).then(function(v) {
-    if (!v[0] || !v[1]) return;
-    return fetch(v[0].replace(/accion=[^&]*/, 'accion=ack') + '&e=' + encodeURIComponent(v[1].endpoint), { mode: 'no-cors' });
+  return Promise.all([caches.open('bk').then(function(c) { return c.match('base'); }).then(function(r) { return r ? r.text() : ''; }).catch(function() { return ''; }), self.registration.pushManager.getSubscription()]).then(function(v) {
+    var base = v[0] || BASE0;
+    if (!v[1]) return;
+    return fetch(base.replace(/accion=[^&]*/, 'accion=ack') + '&e=' + encodeURIComponent(v[1].endpoint), { mode: 'no-cors', redirect: 'follow', cache: 'no-store' });
   }).catch(function() {});
 }
 self.addEventListener('push', function(e) {

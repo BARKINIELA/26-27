@@ -302,8 +302,7 @@
 
 /* v70: sin frutas; escudos planos; ONGI ETORRI con relieve */
 .tit.tbig .fg{display:none!important}
-.tit.tbig .trs b.ec{background:center/11px 11px no-repeat;animation:none!important;filter:none!important}
-.tit.tbig .trl{animation:egl .9s steps(1) infinite}
+.tit.tbig .trs b.ec{background:center/11px 11px no-repeat;animation:tgfz 1.2s step-end calc(var(--d,0s) * -3) infinite!important}
 .escw{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:6;animation:egl .9s steps(1) infinite}
 .escw .ec2{position:absolute;display:block;aspect-ratio:1;background:center/contain no-repeat;animation:ebob 1.5s ease-in-out infinite}
 @keyframes egl{0%{filter:drop-shadow(0 0 .7px #f52dff)}25%{filter:drop-shadow(0 0 .7px #fff)}33%{filter:drop-shadow(0 0 .7px #ff8a00)}58%{filter:drop-shadow(0 0 .7px #fff)}66%{filter:drop-shadow(0 0 .7px #10b4ff)}91%{filter:drop-shadow(0 0 .7px #fff)}100%{filter:drop-shadow(0 0 .7px #f52dff)}}
@@ -358,8 +357,8 @@
     var ss = ms[a].querySelectorAll('.trs'), ex0 = [], ex1 = [], pa = perm(), pb = perm(), pc = perm();
     for (var c = 0; c < ss.length; c++) {
       var ch = ss[c].children, pv = -1;
-      for (var q = 0; q < ch.length; q++) { if (c === 0 && ch[q].classList.contains('tlg')) { pv = -1; continue; } ch[q].classList.remove('tlg'); var f0 = rnd([pv]); put(ch[q], f0); pv = f0; }
-      if (c === 0) { logo(ch[0]); logo(ch[40]); ex0.push(-1); ex1.push(-1); } else { ex0.push(set(ss[c], 0, ex0)); put(ch[60], +ch[0].dataset.i); ex1.push(set(ss[c], 40, ex1)); }
+      for (var q = 0; q < ch.length; q++) { if (ch[q].classList.contains('tlg')) { pv = -1; continue; } var f0 = rnd([pv]); put(ch[q], f0); pv = f0; }
+      ex0.push(set(ss[c], 0, ex0)); ex1.push(set(ss[c], 40, ex1));
       if (ss.length === 3) ss[c].style.animation = 'tgrs' + pa[c] + ' 3s ease-in-out 1 forwards, tgrb' + pb[c] + pc[c] + ' 6s ease-in-out 3s infinite';
     }
   }
@@ -370,7 +369,7 @@
     for (var c = 0; c < o.length; c++) if (o[c] === st) ix = c;
     if (o.length === 3) st.style.animation = 'tgrb' + m.__q[ix] + m.__r[ix] + ' 6s ease-in-out infinite';  /* orden de parada al azar en cada ronda */
     for (var c = 0; c < o.length; c++) if (o[c] !== st && o[c].children[40] && o[c].children[40].dataset.i) ex.push(+o[c].children[40].dataset.i);
-    var ix2 = 0; for (var c = 0; c < o.length; c++) if (o[c] === st) ix2 = c; if (ix2 !== 0) set(st, 40, ex);
+    set(st, 40, ex);
   }, true);
   /* escudos 3D no: planos, apilados alrededor del titulo (lados y arco) */
   try {

@@ -335,6 +335,7 @@
     new URLSearchParams(location.search).forEach(function(v, k) { u.searchParams.set(k, v); });
     var did = ''; try { did = localStorage.getItem('bk_did') || ''; if (!did) { did = 'G-' + Math.random().toString(36).slice(2, 8).toUpperCase(); localStorage.setItem('bk_did', did); } } catch (e2) {}   // codigo de este dispositivo, guardado aqui (almacenamiento fiable) y pasado a la web
     if (did) u.searchParams.set('did', did);
+    try { var nmP = localStorage.getItem('bk_nom'); if (nmP && !u.searchParams.get('yo')) u.searchParams.set('yo', nmP); } catch (e4) {}   // el nombre que ya conoce este movil se pasa a la web: asi reconoce al jugador desde el primer momento (carita animada, su fila) sin esperar a la hoja
     try { if (enStandalone()) u.searchParams.set('sa', '1'); } catch (e3) {}   // la web sabe asi que se ha abierto desde el icono de la pantalla de inicio
     f.src = u.toString();
   } catch (e) { document.body.innerHTML = '<p style="color:#fff;font:16px sans-serif;padding:20px">Falta pegar la direccion de la web en este archivo.</p>'; }

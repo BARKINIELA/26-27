@@ -486,6 +486,7 @@
   function wjor(n) { var r = document.querySelector('#tl .wtr'); if (r) r.innerHTML = wingHTML('JORNADA' + (n ? ' ' + n : '')); }
   // la jornada cambia cada martes a las 12:00 (hora de Madrid): la pantalla de carga calcula cuantos martes han pasado desde la ultima visita y ensena la jornada (y la fecha) que va a salir
   function semMad(ts) { try { var P = {}, f = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }).formatToParts(new Date(ts)); f.forEach(function(p) { P[p.type] = Number(p.value); }); return Math.floor((Date.UTC(P.year, P.month - 1, P.day, P.hour, P.minute) - Date.UTC(2026, 10, 3, 12, 0)) / 604800000); } catch (x) { return 0; } }
+  function hoyMad() { try { var p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date()).forEach(function(u) { p[u.type] = u.value; }); return p.day + '/' + p.month + '/' + p.year.slice(-2); } catch (e) { return ''; } }   // fecha de hoy en Madrid
   function sumaDias(fe, n) { var m = /^(\d{2})\/(\d{2})\/(\d{2,4})$/.exec(fe || ''); if (!m || !n) return fe; var y = Number(m[3]); if (y < 100) y += 2000; var d = new Date(Date.UTC(y, Number(m[2]) - 1, Number(m[1]) + 7 * n)); function z(v) { return ('0' + v).slice(-2); } return z(d.getUTCDate()) + '/' + z(d.getUTCMonth() + 1) + '/' + (m[3].length === 2 ? z(d.getUTCFullYear() % 100) : d.getUTCFullYear()); }
   var JPRE = 0;   // martes pasados desde la ultima visita
   try { var jt = Number(localStorage.getItem('bk_jor_t')) || 0; if (jt) JPRE = Math.max(0, Math.min(8, semMad(Date.now()) - semMad(jt))); } catch (x) {}
@@ -495,7 +496,7 @@
     for (i = 0; i < n; i++) { f = n > 1 ? i / (n - 1) : 0; if (der) f = 1 - f; d = p * 1.3 - 0.15 - f; ls[i].style.color = (d > 0.07) ? LWC[((k % 3) + 3) % 3] : (d > -0.07 ? '#fff' : LWC[(((k - 1) % 3) + 3) % 3]); }
   }
   setInterval(function() { if (ld.className.indexOf('off') >= 0) return; var t = document.getElementById('tl'); if (!t) return; wbarre(t.querySelectorAll('.wtl .wl')); wbarre(t.querySelectorAll('.wtr .wl')); wbarre(t.querySelectorAll('.ngw .nl')); }, 50);
-  try { var fe = localStorage.getItem('bk_fecha'), td = document.querySelector('#tl .tdf'); if (fe && td) td.setAttribute('data-d', sumaDias(fe, JPRE)); } catch (x) {}   // la fecha de la jornada que dejo la ultima visita
+  try { var td = document.querySelector('#tl .tdf'); if (td) td.setAttribute('data-d', hoyMad()); } catch (x) {}   // la pantalla de carga ensena la fecha de hoy
 
   // ---- avisos al movil (web push): el boton 🔔 pide permiso, suscribe este navegador y manda la suscripcion a la web (que la guarda junto al jugador de este dispositivo)
   var VAPID_PUB = "BNMy1Fe0wdJY0SBWF2XSOqKK3tGMcVXRU70NZG2VeITVgM6NTL9-Yy6FS7J7muD2iJ09L0ej6dW1G024PVVRnSk";
@@ -659,7 +660,7 @@
     if (listo || !d || d.bk !== 'listo') return;
     listo = true;
     try { localStorage.setItem('bk_vivo', d.vivo ? '1' : '0'); if (d.fecha) localStorage.setItem('bk_fecha', d.fecha); if (d.jor) { localStorage.setItem('bk_jor', d.jor); localStorage.setItem('bk_jor_t', String(Date.now())); } if (d.nom) localStorage.setItem('bk_nom', d.nom); } catch (x) {}
-    try { if (d.jor) wjor(d.jor); var tdL = document.querySelector('#tl .tdf'); if (d.fecha && tdL) tdL.setAttribute('data-d', d.fecha); } catch (x) {}   // la pantalla de carga ensena la jornada y la fecha que la web va a mostrar ahora, no las de la ultima visita
+    try { if (d.jor) wjor(d.jor); var tdL = document.querySelector('#tl .tdf'); if (tdL) tdL.setAttribute('data-d', hoyMad()); } catch (x) {}   // la pantalla de carga ensena la jornada y la fecha que la web va a mostrar ahora, no las de la ultima visita
     JORV = Number(d.jor) || 0; guiaAhora();   // la web ya muestra la jornada 12 o posterior
     fin(!!d.vivo);
   });

@@ -145,6 +145,7 @@
   .tit.tbig .cabs .rx1{animation:tgR1 1.2s step-end infinite}@keyframes tgR1{0%{fill:#a5001f;stroke:#a5001f}8.333%{fill:#00a533;stroke:#00a533}16.667%{fill:#8600a5;stroke:#8600a5}25%{fill:#a58600;stroke:#a58600}33.333%{fill:#0071a5;stroke:#0071a5}41.667%{fill:#a50071;stroke:#a50071}50%{fill:#71a500;stroke:#71a500}58.333%{fill:#001fa5;stroke:#001fa5}66.667%{fill:#a53300;stroke:#a53300}75%{fill:#00a586;stroke:#00a586}83.333%{fill:#3300a5;stroke:#3300a5}91.667%{fill:#1fa500;stroke:#1fa500}}
   .tit.tbig .cabs .rx2{animation:tgR2 1.2s step-end infinite}@keyframes tgR2{0%{fill:#870019;stroke:#870019}8.333%{fill:#00872a;stroke:#00872a}16.667%{fill:#6d0087;stroke:#6d0087}25%{fill:#876d00;stroke:#876d00}33.333%{fill:#005d87;stroke:#005d87}41.667%{fill:#87005d;stroke:#87005d}50%{fill:#5d8700;stroke:#5d8700}58.333%{fill:#001987;stroke:#001987}66.667%{fill:#872a00;stroke:#872a00}75%{fill:#00876d;stroke:#00876d}83.333%{fill:#2a0087;stroke:#2a0087}91.667%{fill:#198700;stroke:#198700}}
   .tit.tbig .cabs .rx3{animation:tgR3 1.2s step-end infinite}@keyframes tgR3{0%{fill:#690013;stroke:#690013}8.333%{fill:#006922;stroke:#006922}16.667%{fill:#570069;stroke:#570069}25%{fill:#695700;stroke:#695700}33.333%{fill:#004769;stroke:#004769}41.667%{fill:#690047;stroke:#690047}50%{fill:#476900;stroke:#476900}58.333%{fill:#001369;stroke:#001369}66.667%{fill:#692200;stroke:#692200}75%{fill:#006957;stroke:#006957}83.333%{fill:#220069;stroke:#220069}91.667%{fill:#136900;stroke:#136900}}
+  .tit.tbig .cabs .cti polygon:nth-of-type(3){animation:tgst 1.2s step-end infinite}.tit.tbig .cabs .cti polygon:nth-of-type(2){animation:tgst 1.2s step-end -.2s infinite}@keyframes tgst{0%{fill:#ff2d55}16.667%{fill:#ffd60a}33.333%{fill:#30d158}50%{fill:#0a84ff}66.667%{fill:#bf5af2}83.333%{fill:#ff9f0a}}
   .tit.tbig .cabs stop[class^=gs]{animation-duration:1.2s;animation-timing-function:step-end;animation-iteration-count:infinite}
   .tit.tbig .cabs .gs0{animation-name:tgG0}
   .tit.tbig .cabs .gs1{animation-name:tgG1}
@@ -475,7 +476,7 @@
       var wr = document.createElement('div'); wr.className = 'escw'; te.appendChild(wr);
       var P = [], sd = 7;
       function R() { sd = (sd * 16807) % 2147483647; return sd / 2147483647; }
-      function pile(cx, cnt) { cnt.forEach(function (n, r) { var y = 31.8 - r * 3.9; for (var i = 0; i < n; i++) P.push([cx + (i - (n - 1) / 2) * 5.2 + (R() * .6 - .3), y + (R() * .5 - .25), 8.1 + R() * .5, R() * 30 - 15, 100 - r]); }); }
+      function pile(cx, cnt) { cnt.forEach(function (n, r) { var y = 31.8 - r * 3.9, ox = (r === cnt.length - 1) ? (cx < 50 ? -2.6 : 2.6) : 0; for (var i = 0; i < n; i++) P.push([cx + ox + (i - (n - 1) / 2) * 5.2 + (R() * .6 - .3), y + (R() * .5 - .25), 8.1 + R() * .5, R() * 30 - 15, 100 - r]); }); }
       function fy(x) { var d = Math.abs(x - 50); return d <= 23 ? 19.9 + 1.9 * Math.pow(d / 23, 2) : 21.8 + (d - 23) * .28; }
       pile(14, [4, 4, 4, 3]); pile(86, [4, 4, 4, 3]);
       for (var q = 0; q < 13; q++) { var x = 22 + q * 4.67; P.push([x, 19.9 + 1.4 * Math.pow(Math.abs(x - 50) / 28, 2), 8.1, (x - 50) / 28 * 18, 10 + (q % 2) * 5]); }

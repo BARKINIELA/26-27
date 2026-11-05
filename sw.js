@@ -29,7 +29,7 @@ self.addEventListener('push', function(e) {
       var n = v[0], jr = jrS;   // si la hoja no contesta, el titulo es solo JORNADA: nunca se pone una jornada vieja recordada
       return self.registration.showNotification(jr ? 'JORNADA ' + jr : 'JORNADA', {   /* titulo: la jornada (iOS anade debajo "from" + nombre de la app, eso no se puede quitar) */
         body: '😡 ' + (n ? n + ', aste' : 'Aste') + ' hontako apustua osatu gabe do! 😡',
-        icon: 'icon-192.png', badge: 'icon-192.png', tag: 'apuesta', renotify: true, vibrate: [250, 120, 250, 120, 250], timestamp: Date.now(), data: { u: self.registration.scope + '?aviso=1' }   // aviso=1: la web se abre en la jornada de los avisos
+        icon: 'icon-192.png', badge: 'icon-192.png', tag: 'apuesta', renotify: true, vibrate: [250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250], timestamp: Date.now(), data: { u: self.registration.scope + '?aviso=1' }   // aviso=1: la web se abre en la jornada de los avisos
       });
     });
   }));

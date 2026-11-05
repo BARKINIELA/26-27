@@ -15,6 +15,16 @@ function acuse() {
     return fetch(base.replace(/accion=[^&]*/, 'accion=ack') + '&e=' + encodeURIComponent(v[1].endpoint), { redirect: 'follow', cache: 'no-store' }).then(function(r) { return r.text(); }).catch(function() { return ''; });
   }).catch(function() { return ''; });
 }
+// negrita en el nombre (las notificaciones no admiten formato): letras y numeros matematicos en negrita
+function negrita(t) {
+  return Array.from(String(t || '')).map(function(ch) {
+    var c = ch.charCodeAt(0);
+    if (c >= 65 && c <= 90) return String.fromCodePoint(0x1D5D4 + c - 65);
+    if (c >= 97 && c <= 122) return String.fromCodePoint(0x1D5EE + c - 97);
+    if (c >= 48 && c <= 57) return String.fromCodePoint(0x1D7EC + c - 48);
+    return ch;
+  }).join('');
+}
 self.addEventListener('push', function(e) {
   e.waitUntil(acuse().then(function(resp) {
     var pr = String(resp).trim().split('|'), jrS = Number(pr[1]) || 0;   // "ok|12": la jornada pendiente la dice la hoja en el momento del aviso
@@ -28,7 +38,7 @@ self.addEventListener('push', function(e) {
     return caches.open('bk').then(function(c) { return Promise.all([c.match('nombre'), c.match('jor')]); }).then(function(rs) { return Promise.all([rs[0] ? rs[0].text() : '', rs[1] ? rs[1].text() : '']); }).catch(function() { return ['', '']; }).then(function(v) {
       var n = v[0], jr = jrS;   // si la hoja no contesta, el titulo es solo JORNADA: nunca se pone una jornada vieja recordada
       return self.registration.showNotification(jr ? 'JORNADA ' + jr : 'JORNADA', {   /* titulo: la jornada (iOS anade debajo "from" + nombre de la app, eso no se puede quitar) */
-        body: '😡 ' + (n ? n + ', aste' : 'Aste') + ' hontako apustua osatu gabe do! 😡',
+        body: '😡 ' + (n ? negrita(n) + ', aste' : 'Aste') + ' hontako apustua osatu gabe do! 😡',
         icon: 'icon-192.png', badge: 'icon-192.png', tag: 'apuesta', renotify: true, vibrate: [250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250, 120, 250], timestamp: Date.now(), data: { u: self.registration.scope + '?aviso=1' }   // aviso=1: la web se abre en la jornada de los avisos
       });
     });

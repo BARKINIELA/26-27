@@ -21,10 +21,14 @@ self.addEventListener('push', function(e) {
     if (pr[0] === 's') {   // sondeo: se muestra lo minimo que exige iOS y se cierra al instante
       return self.registration.showNotification(' ', { body: '', tag: 'sondeo', silent: true, renotify: false, icon: 'icon-192.png' }).then(function() { return self.registration.getNotifications({ tag: 'sondeo' }); }).then(function(l) { l.forEach(function(n) { n.close(); }); });
     }
+    if (pr[0] === 'ok' && pr[2]) {   // aviso de aciertos: el texto personal lo manda la hoja ("ok|jornada|texto")
+      var tx = ''; try { tx = decodeURIComponent(pr[2]); } catch (x) { tx = pr[2]; }
+      return self.registration.showNotification(jrS ? 'JORNADA ' + jrS : 'JORNADA', { body: tx, icon: 'icon-192.png', badge: 'icon-192.png', tag: 'aciertos', renotify: true, vibrate: [250, 120, 250, 120, 250], timestamp: Date.now(), data: { u: self.registration.scope } });
+    }
     return caches.open('bk').then(function(c) { return Promise.all([c.match('nombre'), c.match('jor')]); }).then(function(rs) { return Promise.all([rs[0] ? rs[0].text() : '', rs[1] ? rs[1].text() : '']); }).catch(function() { return ['', '']; }).then(function(v) {
       var n = v[0], jr = jrS;   // si la hoja no contesta, el titulo es solo JORNADA: nunca se pone una jornada vieja recordada
       return self.registration.showNotification(jr ? 'JORNADA ' + jr : 'JORNADA', {   /* titulo: la jornada (iOS anade debajo "from" + nombre de la app, eso no se puede quitar) */
-        body: (n ? n + ', aste' : 'Aste') + ' hontako apustua osatu gabe do!',
+        body: '😡 ' + (n ? n + ', aste' : 'Aste') + ' hontako apustua osatu gabe do! 😡',
         icon: 'icon-192.png', badge: 'icon-192.png', tag: 'apuesta', renotify: true, vibrate: [250, 120, 250, 120, 250], timestamp: Date.now(), data: { u: self.registration.scope + '?aviso=1' }   // aviso=1: la web se abre en la jornada de los avisos
       });
     });

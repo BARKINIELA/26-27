@@ -499,11 +499,11 @@
   var JPRE = 0;   // martes pasados desde la ultima visita
   try { var jt = Number(localStorage.getItem('bk_jor_t')) || 0; if (jt) JPRE = Math.max(0, Math.min(8, semMad(Date.now()) - semMad(jt))); } catch (x) {}
   try { var jj = Number(localStorage.getItem('bk_jor')) || 0; wjor(jj ? String(jj + JPRE) : ''); } catch (x) { wjor(''); }
-  function wbarre(ls, izq) {
+  function wbarre(ls, izq, inv) {
     var i, n = ls.length, now = Date.now(), k = Math.floor(now / 1000), p = (now % 1000) / 1000, der = izq ? false : (k % 2 === 1), f, d;
-    for (i = 0; i < n; i++) { f = n > 1 ? i / (n - 1) : 0; if (der) f = 1 - f; d = p * 1.3 - 0.15 - f; ls[i].style.color = (d > 0.07) ? LWC[((k % 3) + 3) % 3] : (d > -0.07 ? '#fff' : LWC[(((k - 1) % 3) + 3) % 3]); }
+    for (i = 0; i < n; i++) { f = n > 1 ? i / (n - 1) : 0; if (der) f = 1 - f; if (inv) f = 1 - f; d = p * 1.3 - 0.15 - f; ls[i].style.color = (d > 0.07) ? LWC[((k % 3) + 3) % 3] : (d > -0.07 ? '#fff' : LWC[(((k - 1) % 3) + 3) % 3]); }
   }
-  setInterval(function() { if (ld.className.indexOf('off') >= 0) return; var t = document.getElementById('tl'); if (!t) return; wbarre(t.querySelectorAll('.wtl .wl')); wbarre(t.querySelectorAll('.wtr .wl')); wbarre(t.querySelectorAll('.ngw .nl')); }, 50);
+  setInterval(function() { if (ld.className.indexOf('off') >= 0) return; var t = document.getElementById('tl'); if (!t) return; wbarre(t.querySelectorAll('.wtl .wl')); wbarre(t.querySelectorAll('.wtr .wl')); wbarre(t.querySelectorAll('.ngw .nl'), false, true); }, 50);
   try { var td = document.querySelector('#tl .tdf'); if (td) td.setAttribute('data-d', hoyMad()); } catch (x) {}   // la pantalla de carga ensena la fecha de hoy
 
   // ---- avisos al movil (web push): el boton 🔔 pide permiso, suscribe este navegador y manda la suscripcion a la web (que la guarda junto al jugador de este dispositivo)

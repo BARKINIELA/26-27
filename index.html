@@ -327,6 +327,7 @@
 @keyframes egl{0%{filter:drop-shadow(0 0 .7px #f52dff)}25%{filter:drop-shadow(0 0 .7px #fff)}33%{filter:drop-shadow(0 0 .7px #ff8a00)}58%{filter:drop-shadow(0 0 .7px #fff)}66%{filter:drop-shadow(0 0 .7px #10b4ff)}91%{filter:drop-shadow(0 0 .7px #fff)}100%{filter:drop-shadow(0 0 .7px #f52dff)}}
 @keyframes ebob{0%,100%{translate:0 0;rotate:0deg}50%{translate:0 -7%;rotate:5deg}}
 #tl .ong{filter:drop-shadow(.6px 2px 0 #a14f00) drop-shadow(.6px 2px 0 #7d3d00) drop-shadow(.6px 2px 0 #592b00) drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+  @media (max-width:759px){#ld .tcity .cl,#ld .tcity .cr{width:150vw;height:min(80vh,150vw)}#ld .tcity .cl{left:-38vw}#ld .tcity .cr{right:-38vw}}
 </style>
 </head>
 <body>
@@ -344,7 +345,7 @@
     new URLSearchParams(location.search).forEach(function(v, k) { u.searchParams.set(k, v); });
     var did = ''; try { did = localStorage.getItem('bk_did') || ''; if (!did) { did = 'G-' + Math.random().toString(36).slice(2, 8).toUpperCase(); localStorage.setItem('bk_did', did); } } catch (e2) {}   // codigo de este dispositivo, guardado aqui (almacenamiento fiable) y pasado a la web
     if (did) u.searchParams.set('did', did);
-    try { var nmP = localStorage.getItem('bk_nom'); if (nmP && !u.searchParams.get('yo')) u.searchParams.set('yo', nmP); } catch (e4) {}   // el nombre que ya conoce este movil se pasa a la web: asi reconoce al jugador desde el primer momento (carita animada, su fila) sin esperar a la hoja
+    try { var nmP = localStorage.getItem('bk_nom'); if (nmP) u.searchParams.set('yo', nmP); } catch (e4) {}   // el nombre que ya conoce este movil se pasa a la web: asi reconoce al jugador desde el primer momento (carita animada, su fila) sin esperar a la hoja
     try { if (enStandalone()) u.searchParams.set('sa', '1'); } catch (e3) {}   // la web sabe asi que se ha abierto desde el icono de la pantalla de inicio
     f.src = u.toString();
   } catch (e) { document.body.innerHTML = '<p style="color:#fff;font:16px sans-serif;padding:20px">Falta pegar la direccion de la web en este archivo.</p>'; }
@@ -356,10 +357,10 @@
     var w = window.innerWidth, hh = window.innerHeight;
     tl.style.zoom = ''; window.ZM = 1;
     if (w < 760) return;
-    var bw = Math.max(tl.offsetWidth, 434), bh = Math.max(tl.offsetHeight, 845); /* 845: alto con las letras de arriba y la fila del golf ya puestas */
-    var z = Math.min((hh - 36) / bh, w * .86 / bw, 2.6); if (z < 1.04) return;
+    var bw = Math.max(tl.offsetWidth, 434), bh = Math.max(tl.offsetHeight, 800); /* 845: alto con las letras de arriba y la fila del golf ya puestas */
+    var z = Math.min((hh - 8) / bh, w * .92 / bw, 2.8); if (z < 1.04) return;
     tl.style.zoom = z.toFixed(3); window.ZM = z;
-    for (var k = 0; k < 3; k++) { var rh = tl.getBoundingClientRect().height; if (!rh || rh <= hh - 30) break; z = z * (hh - 36) / rh; if (z < 1.04) { tl.style.zoom = ''; window.ZM = 1; return; } tl.style.zoom = z.toFixed(3); window.ZM = z; }
+    for (var k = 0; k < 3; k++) { var rh = tl.getBoundingClientRect().height; if (!rh || rh <= hh - 6) break; z = z * (hh - 8) / rh; if (z < 1.04) { tl.style.zoom = ''; window.ZM = 1; return; } tl.style.zoom = z.toFixed(3); window.ZM = z; }
   }
   fit(); window.addEventListener('resize', fit); window.addEventListener('load', fit); setTimeout(fit, 150); setTimeout(fit, 600);
 })();
@@ -661,7 +662,9 @@
   function quita() { setTimeout(refrescaSub, 1500); setTimeout(infoPermiso, 2500); ld.className = 'off'; try { toInner({ bk: 'giro' }, '*'); } catch (x) {} setTimeout(function() { ld.style.display = 'none'; }, 600); setTimeout(function() { PAGEVIS = true; guiaAhora(); }, 700); }
   // la pantalla de carga dura: jornada en juego = hasta que la tabla esta pintada; si no (antes de empezar o terminada) = al menos 3 segundos y hasta que la tabla esta pintada
   var t0 = Date.now(), listo = false;
-  function fin(vivo) { setTimeout(quita, vivo ? 0 : Math.max(0, 3000 - (Date.now() - t0))); }
+  /* v116: la pantalla de carga solo se quita cuando los tres rodillos estan parados en los 3 logos (tiradas impares: 1.ª, 3.ª, 5.ª...), nunca a mitad de giro o con un solo logo */
+  function esperaLogos(ms, min) { var e = Math.max(ms, min || 0) / 1000, k = Math.max(0, Math.floor((e - 1.9) / 6)), lo = 1.9 + 6 * k, w; if (e < lo + 0.6) w = lo + 0.6 - e; else if (e <= lo + 1.3) w = 0; else w = 1.9 + 6 * (k + 1) + 0.6 - e; return Math.round((w + e - ms / 1000) * 1000); }
+  function fin(vivo) { setTimeout(quita, vivo ? 0 : esperaLogos(Date.now() - t0, 3000)); }
   window.addEventListener('message', function(e) {
     var d = e.data; if (d && d.bk === 'nombre' && d.nom) { try { localStorage.setItem('bk_nom', String(d.nom)); } catch (x) {} }
     if (d && d.bk === 'inst') { try { if (d.v) { window.bkAct = !!d.act; window.bkNo = false; localStorage.setItem('bk_inst', d.act ? '2' : '1'); guiaAhora(); }   /* app ya instalada (con o sin avisos): desde Safari o el enlace sale SIEMPRE el aviso de cerrar la pestaña y entrar por el icono */ else { window.bkNo = true; localStorage.removeItem('bk_inst'); localStorage.removeItem('bk_gh'); if (window.bkYaOff) { window.bkYaOff(); guiaAhora(); } } } catch (x) {} }   // la web dice si este jugador ya tiene la app instalada

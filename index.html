@@ -376,11 +376,10 @@ html.xm #ld:after{position:absolute;left:0;right:0;top:-300px;bottom:0;content:"
   function put(b, f) { b.classList.add('ec'); b.dataset.i = f; b.style.backgroundImage = 'url(' + pool()[f] + ')'; b.textContent = ''; }
   function logo(b) { b.classList.remove('ec'); b.classList.add('tlg'); b.style.backgroundImage = ''; b.textContent = ''; delete b.dataset.i; }
   function set(st, i, ex) { var b = st.children[i]; if (!b) return; var f = rnd(ex); put(b, f); return f; }
-  function uni() { var x = Math.floor(Math.random() * 3); return [x, x, x]; }   /* los tres rodillos con los mismos tiempos: paran a la vez, asi siempre salen los tres logos (o ninguno) */
-function perm() { var p = [0, 1, 2], i, j, t; for (i = 2; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = p[i]; p[i] = p[j]; p[j] = t; } return p; }
+  function perm() { var p = [0, 1, 2], i, j, t; for (i = 2; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = p[i]; p[i] = p[j]; p[j] = t; } return p; }
   var ms = document.querySelectorAll('.tsm');
   for (var a = 0; a < ms.length; a++) {
-    var ss = ms[a].querySelectorAll('.trs'), ex0 = [], ex1 = [], pa = uni(), pb = uni(), pc = uni();
+    var ss = ms[a].querySelectorAll('.trs'), ex0 = [], ex1 = [], pa = perm(), pb = perm(), pc = perm();
     for (var c = 0; c < ss.length; c++) {
       var ch = ss[c].children, pv = -1;
       for (var q = 0; q < ch.length; q++) { if (ch[q].classList.contains('tlg')) { pv = -1; continue; } var f0 = rnd([pv]); put(ch[q], f0); pv = f0; }
@@ -391,7 +390,7 @@ function perm() { var p = [0, 1, 2], i, j, t; for (i = 2; i > 0; i--) { j = Math
   document.addEventListener('animationiteration', function (e) {
     if (e.animationName.indexOf('tgrb') !== 0) return;
     var st = e.target, m = st.parentNode.parentNode, o = m.querySelectorAll('.trs'), ex = [], nw = performance.now(), ix = 0;
-    if (!m.__q || nw - m.__t > 300) { m.__q = uni(); m.__r = uni(); m.__t = nw; }
+    if (!m.__q || nw - m.__t > 300) { m.__q = perm(); m.__r = perm(); m.__t = nw; }
     for (var c = 0; c < o.length; c++) if (o[c] === st) ix = c;
     if (o.length === 3) st.style.animation = 'tgrb' + m.__q[ix] + m.__r[ix] + ' 6s ease-in-out infinite';  /* orden de parada al azar en cada ronda */
     for (var c = 0; c < o.length; c++) if (o[c] !== st && o[c].children[40] && o[c].children[40].dataset.i) ex.push(+o[c].children[40].dataset.i);

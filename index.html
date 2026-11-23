@@ -3,7 +3,7 @@
 <head><script>try{if(localStorage.getItem("bk_nav")==="1")document.documentElement.classList.add("xm")}catch(e){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://script.google.com">
 <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="dns-prefetch" href="https://script.googleusercontent.com">
@@ -762,9 +762,7 @@
 
   // en el movil la web se disenia para 542 px de ancho: se muestra a ese ancho y se escala para llenar la pantalla
   function ajusta() {
-    var w = window.innerWidth, h = window.innerHeight, sat = 0;
-    try { var pr = document.getElementById('satp'); if (!pr) { pr = document.createElement('div'); pr.id = 'satp'; pr.style.cssText = 'position:fixed;left:0;top:0;width:0;visibility:hidden;padding-top:env(safe-area-inset-top,0px)'; document.body.appendChild(pr); } sat = pr.offsetHeight || 0; } catch (eS) { sat = 0; }   // v166 PRUEBA: con la barra de estado translucida la pagina llega hasta arriba del movil; la tragaperras (iframe) se queda donde estaba, debajo de la hora
-    h = h - sat; f.style.top = sat + 'px';
+    var w = window.innerWidth, h = window.innerHeight;
     if (w < 700) { var k = w / 542; f.style.width = '542px'; f.style.height = (h / k) + 'px'; f.style.transform = 'scale(' + k + ')'; }
     else { f.style.width = w + 'px'; f.style.height = h + 'px'; f.style.transform = 'none'; }
   }
